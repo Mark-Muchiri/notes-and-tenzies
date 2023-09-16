@@ -1,10 +1,12 @@
 import propTypes from 'prop-types';
+import './Navbar.css'
 
 export default function Navbar(props) {
     Navbar.propTypes = {
         darkMode: propTypes.bool,
         toggleDarkMode: propTypes.bool,
     };
+
     return (
         <nav
             className={props.darkMode ? "dark" : ""}

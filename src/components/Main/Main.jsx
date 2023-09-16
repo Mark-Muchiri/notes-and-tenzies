@@ -1,4 +1,5 @@
 import propTypes from 'prop-types';
+import './Main.css'
 
 export default function Main(props) {
     Main.propTypes = {
