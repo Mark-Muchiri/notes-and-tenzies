@@ -1,3 +1,21 @@
+* {
+    box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+body {
+    margin: 0;
+}
+
 /* MAIN styles */
 main {
     padding: 57px 27px;
