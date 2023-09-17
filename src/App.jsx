@@ -11,16 +11,18 @@ import { nanoid } from "nanoid";
 
 export default function App() {
     /** 
-     *  Challenge:
-     * Lazily initialize our `notes` state so it doesn't
-     * reach into localStorage on every single re-render
-     * of the App component
+     * Documentation :
       NOTE => Making the state into a function (Here, we've used an arrow functiion, but any function works for this purpose) allows it to lazily initialize 
      */
+
+    /** 
+     * Challenge: When the user edits a note, reposition
+     * it in the list of notes to the top of the list
+     */
+    
     const [notes, setNotes] = useState(
         () => (JSON.parse(localStorage.getItem('notes')) || [])
     );
-    // const [notes, setNotes] = useState(/*Your code here*/ || [])
     const [currentNoteId, setCurrentNoteId] = useState(
         (notes[0] && notes[0].id) || ""
     );
