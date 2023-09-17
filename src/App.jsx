@@ -8,20 +8,17 @@ import Editor from "./components/Editor";
 import Split from "react-split";
 import { nanoid } from "nanoid";
 
-/**
- * Challenge:
- * 1. Every time the `notes` array changes, save it 
- *    in localStorage. You'll need to use JSON.stringify()
- *    to turn the array into a string to save in localStorage.
- * 2. When the app first loads, initialize the notes state
- *    with the notes saved in localStorage. You'll need to
- *    use JSON.parse() to turn the stringified array back
- *    into a real JS array.
- */
 
 export default function App() {
+    /** 
+     *  Challenge:
+     * Lazily initialize our `notes` state so it doesn't
+     * reach into localStorage on every single re-render
+     * of the App component
+     */
+    //* Making the state into a function (Here, we've used an arrow functiion, but any function works for this purpose) allows it to lazily initialize 
     const [notes, setNotes] = useState(
-        JSON.parse(localStorage.getItem('notes')) || []
+        () => (JSON.parse(localStorage.getItem('notes')) || [])
     );
     // const [notes, setNotes] = useState(/*Your code here*/ || [])
     const [currentNoteId, setCurrentNoteId] = useState(
