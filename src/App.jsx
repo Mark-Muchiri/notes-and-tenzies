@@ -15,8 +15,8 @@ export default function App() {
      * Lazily initialize our `notes` state so it doesn't
      * reach into localStorage on every single re-render
      * of the App component
+      NOTE => Making the state into a function (Here, we've used an arrow functiion, but any function works for this purpose) allows it to lazily initialize 
      */
-    //* Making the state into a function (Here, we've used an arrow functiion, but any function works for this purpose) allows it to lazily initialize 
     const [notes, setNotes] = useState(
         () => (JSON.parse(localStorage.getItem('notes')) || [])
     );
@@ -27,6 +27,7 @@ export default function App() {
 
     useEffect(() => {
         localStorage.setItem('notes', JSON.stringify(notes));
+        // console.log(JSON.stringify(notes[0].body.split("\n")))
     }, [notes]);
 
     function createNewNote() {

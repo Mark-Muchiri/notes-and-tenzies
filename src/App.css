@@ -116,6 +116,7 @@ button:focus {
 .selected-note .text-snippet {
   color: white;
   font-weight: 700;
+  background-color: #4A4E74;
 }
 
 .gutter {
