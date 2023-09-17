@@ -5,8 +5,8 @@ import propTypes from 'prop-types'
 
 export default function Editor({ currentNote, updateNote }) {
     Editor.propTypes = {
-        currentNote: propTypes.func,
-        updateNote: propTypes.func,
+        currentNote: propTypes,
+        updateNote: propTypes,
     }
     const [selectedTab, setSelectedTab] = useState("write")
 
@@ -18,7 +18,7 @@ export default function Editor({ currentNote, updateNote }) {
     })  
 
     return (
-        <section className="pane editor">
+        <section className="pane-editor" style={{backgroundColor: ""}}>
             <ReactMde
                 value={currentNote.body}
                 onChange={updateNote}

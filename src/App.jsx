@@ -1,7 +1,7 @@
 import './App.css';
 // import Main from './components/Main/Main';
 // import Navbar from './components/navbar/Navbar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Sidebar from "./components/Sidebar";
 import Editor from "./components/Editor";
 // import { data } from "./data"
@@ -20,11 +20,17 @@ import { nanoid } from "nanoid";
  */
 
 export default function App() {
-    const [notes, setNotes] = useState([]);
-    // const [notes, setNotes] = React.useState(/*Your code here*/ || [])
+    const [notes, setNotes] = useState(
+        JSON.parse(localStorage.getItem('notes')) || []
+    );
+    // const [notes, setNotes] = useState(/*Your code here*/ || [])
     const [currentNoteId, setCurrentNoteId] = useState(
         (notes[0] && notes[0].id) || ""
     );
+
+    useEffect(() => {
+        localStorage.setItem('notes', JSON.stringify(notes));
+    }, [notes]);
 
     function createNewNote() {
         const newNote = {
