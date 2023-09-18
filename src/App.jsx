@@ -12,7 +12,8 @@ import { nanoid } from "nanoid";
 export default function App() {
     /** 
      * Documentation :
-      NOTE => Making the state into a function (Here, we've used an arrow functiion, but any function works for this purpose) allows it to lazily initialize 
+      NOTE => Making the state into a function  allows it to lazily initialize 
+      (Here, we've used an arrow function, but any function works for this purpose)
      */
 
     /** 

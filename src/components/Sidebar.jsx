@@ -28,8 +28,7 @@ export default function Sidebar(props) {
         ) => (
             <div key={note.id}>
                 <div
-                    className={`title ${note.id === props.currentNote.id ? "selected-note" : ""
-                        }`}
+                    className={`title ${note.id === props.currentNote.id ? "selected-note" : ""}`}
                     onClick={() => props.setCurrentNoteId(note.id)}
                 >
                     {/* Using split JS func to get the 1st line of the note and display it on the sidebar */}
