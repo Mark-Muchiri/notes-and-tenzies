@@ -12,7 +12,7 @@ import { nanoid } from "nanoid";
 export default function App() {
     /** 
      * Documentation :
-      NOTE => Making the state into a function  allows it to lazily initialize 
+      INFO: => Making the state into a function  allows it to lazily initialize 
       (Here, we've used an arrow function, but any function works for this purpose)
      */
 
@@ -20,7 +20,7 @@ export default function App() {
      * Challenge: When the user edits a note, reposition
      * it in the list of notes to the top of the list
      */
-    
+
     const [notes, setNotes] = useState(
         () => (JSON.parse(localStorage.getItem('notes')) || [])
     );
