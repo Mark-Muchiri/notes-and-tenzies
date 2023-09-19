@@ -30,24 +30,33 @@ export default function App() {
 
     useEffect(() => {
         localStorage.setItem('notes', JSON.stringify(notes));
+        // console.log((new Date()))
         // console.log(JSON.stringify(notes[0].body.split("\n")))
     }, [notes]);
 
     function createNewNote() {
         const newNote = {
             id: nanoid(),
-            body: "# Type your markdown note's title here"
+            body: "# Type your markdown note's title here",
         };
         setNotes(prevNotes => [newNote, ...prevNotes]);
         setCurrentNoteId(newNote.id);
     }
 
     function updateNote(text) {
-        setNotes(oldNotes => oldNotes.map(oldNote => {
-            return oldNote.id === currentNoteId
-                ? { ...oldNote, body: text }
-                : oldNote;
-        }));
+        //  NOTE => This puts recently-modified note to the top
+        setNotes(oldNotes => {
+            const newArray = [];
+            for (let i = 0; i < oldNotes.length; i++) {
+                const oldNote = oldNotes[i];
+                if (oldNote.id === currentNoteId) {
+                    newArray.unshift({ ...oldNote, body: text });
+                } else {
+                    newArray.push(oldNote);
+                }
+            }
+            return newArray;
+        });
     }
 
     function findCurrentNote() {

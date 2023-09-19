@@ -2,6 +2,7 @@
   box-sizing: border-box;
   background-color: #0f111a;
   color: white;
+  font-weight: 100 !important;
 }
 
 /* body * {
