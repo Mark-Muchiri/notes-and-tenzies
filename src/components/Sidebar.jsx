@@ -6,6 +6,7 @@ export default function Sidebar(props) {
         currentNote: propTypes,
         setCurrentNoteId: propTypes,
         newNote: propTypes,
+        deleteNote: propTypes,
     };
 
     const noteElements = props.notes.map(
@@ -18,11 +19,13 @@ export default function Sidebar(props) {
                     className={`title ${note.id === props.currentNote.id ? "selected-note" : ""}`}
                     onClick={() => props.setCurrentNoteId(note.id)}
                 >
-                    {/* Using split JS func to get the 1st line of the note and display it on the sidebar */}
-                    <h4 className="text-snippet">{note.body.split("\n")[0]}</h4>
+
+                    {/* NOTE => Using split JS func to get the 1st 
+                    line of the note and display it on the sidebar */}
+                    <h4 className="text-snippet">{note.body.split("\n")[ 0 ]}</h4>
                     <button
                         className="delete-btn"
-                    // Your onClick event handler here
+                        onClick={(event) => props.deleteNote(event, note.id)}
                     >
                         <i className="gg-trash trash-icon"></i>
                     </button>

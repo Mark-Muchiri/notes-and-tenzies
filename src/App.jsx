@@ -12,38 +12,39 @@ import { nanoid } from "nanoid";
 export default function App() {
     /** 
      * DOCUMENTATION :
-      INFO: => Making the state into a function  allows it to lazily initialize 
-      (Here, we've used an arrow function, but any function works for this purpose)
+      INFO: => Making the state into a function 
+      allows it to lazily initialize 
+      (Here, we've used an arrow function, 
+      but any function works for this purpose)
      */
 
-    const [notes, setNotes] = useState(
+    const [ notes, setNotes ] = useState(
         () => (JSON.parse(localStorage.getItem('notes')) || [])
     );
-    const [currentNoteId, setCurrentNoteId] = useState(
-        (notes[0] && notes[0].id) || ""
+    const [ currentNoteId, setCurrentNoteId ] = useState(
+        (notes[ 0 ] && notes[ 0 ].id) || ""
     );
 
     useEffect(() => {
         localStorage.setItem('notes', JSON.stringify(notes));
-        // console.log((new Date()))
-        // console.log(JSON.stringify(notes[0].body.split("\n")))
-    }, [notes]);
+    }, [ notes ]);
 
+    // INFO: CRUD Functions. Passed to children components as props. Tree format architecture
     function createNewNote() {
         const newNote = {
             id: nanoid(),
-            body: "# Type your markdown note's title here",
+            body: "Type your markdown note's title here",
         };
-        setNotes(prevNotes => [newNote, ...prevNotes]);
+        setNotes(prevNotes => [ newNote, ...prevNotes ]);
         setCurrentNoteId(newNote.id);
     }
 
     function updateNote(text) {
-        //  NOTE => This puts recently-modified note to the top
+        //  INFO: => This puts recently-modified note to the top
         setNotes(oldNotes => {
             const newArray = [];
             for (let i = 0; i < oldNotes.length; i++) {
-                const oldNote = oldNotes[i];
+                const oldNote = oldNotes[ i ];
                 if (oldNote.id === currentNoteId) {
                     newArray.unshift({ ...oldNote, body: text });
                 } else {
@@ -53,28 +54,16 @@ export default function App() {
             return newArray;
         });
     }
-    
-    /**
-     * Challenge: complete and implement the deleteNote function
-     * 
-     * Hints: 
-     * 1. What array method can be used to return a new
-     *    array that has filtered out an item based 
-     *    on a condition?
-     * 2. Notice the parameters being based to the function
-     *    and think about how both of those parameters
-     *    can be passed in during the onClick event handler
-     */
-    
+
     function deleteNote(event, noteId) {
-        event.stopPropagation()
-        // Your code here
+        event.stopPropagation();
+        setNotes(oldNotes => oldNotes.filter((note) => note.id !== noteId));
     }
 
     function findCurrentNote() {
         return notes.find(note => {
             return note.id === currentNoteId;
-        }) || notes[0];
+        }) || notes[ 0 ];
     }
 
     return (
@@ -83,7 +72,7 @@ export default function App() {
                 notes.length > 0
                     ?
                     <Split
-                        sizes={[30, 70]}
+                        sizes={[ 30, 70 ]}
                         direction="horizontal"
                         className="split"
                     >
@@ -92,6 +81,7 @@ export default function App() {
                             currentNote={findCurrentNote()}
                             setCurrentNoteId={setCurrentNoteId}
                             newNote={createNewNote}
+                            deleteNote={deleteNote}
                         />
                         {
                             currentNoteId &&
