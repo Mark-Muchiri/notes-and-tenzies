@@ -4,9 +4,10 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import Sidebar from "./components/Sidebar";
 import Editor from "./components/Editor";
-// import { data } from "./data"
 import Split from "react-split";
-import { nanoid } from "nanoid";
+import { notesCollection, db } from '../firebase.js';
+// OnSnapshot Hellps us keep data in sync
+import { addDoc, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 
 
 export default function App() {
@@ -18,25 +19,37 @@ export default function App() {
       but any function works for this purpose)
      */
 
-    const [ notes, setNotes ] = useState(
-        () => (JSON.parse(localStorage.getItem('notes')) || [])
-    );
+    // notes has to be an array of data (in form of objects)
+    const [ notes, setNotes ] = useState([]);
     const [ currentNoteId, setCurrentNoteId ] = useState(
-        (notes[ 0 ] && notes[ 0 ].id) || ""
+        (notes[ 0 ]?.id) || ""
     );
+
+    const currentNote = notes.find(note => note.id === setCurrentNoteId) || notes[ 0 ];
 
     useEffect(() => {
-        localStorage.setItem('notes', JSON.stringify(notes));
-    }, [ notes ]);
-
-    // INFO: CRUD Functions. Passed to children components as props. Tree format architecture
-    function createNewNote() {
+        // eslint-disable-next-line no-unused-vars
+        const unsubscribe = onSnapshot(notesCollection, function (snapshot) {
+            // INFO: sync up our local array with the snapshot data
+            const notesArr = snapshot.docs.map(doc => ({
+                ...doc.data(),
+                id: doc.id
+            }));
+            setNotes(notesArr);
+        });
+        return unsubscribe;
+    }, []);
+    /*
+    INFO: CRUD Functions. 
+    Passed to children components as props. 
+    Tree format architecture
+    */
+    async function createNewNote() {
         const newNote = {
-            id: nanoid(),
             body: "Type your markdown note's title here",
         };
-        setNotes(prevNotes => [ newNote, ...prevNotes ]);
-        setCurrentNoteId(newNote.id);
+        const newNoteRef = await addDoc(notesCollection, newNote);
+        setCurrentNoteId(newNoteRef.id);
     }
 
     function updateNote(text) {
@@ -55,15 +68,10 @@ export default function App() {
         });
     }
 
-    function deleteNote(event, noteId) {
-        event.stopPropagation();
-        setNotes(oldNotes => oldNotes.filter((note) => note.id !== noteId));
-    }
-
-    function findCurrentNote() {
-        return notes.find(note => {
-            return note.id === currentNoteId;
-        }) || notes[ 0 ];
+    async function deleteNote(noteId) {
+        // INFO: `doc()` helps us get access to a single document
+        const docRef = doc(db, "notes", noteId);
+        await deleteDoc(docRef);
     }
 
     return (
@@ -78,7 +86,7 @@ export default function App() {
                     >
                         <Sidebar
                             notes={notes}
-                            currentNote={findCurrentNote()}
+                            currentNote={currentNote}
                             setCurrentNoteId={setCurrentNoteId}
                             newNote={createNewNote}
                             deleteNote={deleteNote}
@@ -87,7 +95,7 @@ export default function App() {
                             currentNoteId &&
                             notes.length > 0 &&
                             <Editor
-                                currentNote={findCurrentNote()}
+                                currentNote={currentNote}
                                 updateNote={updateNote}
                             />
                         }
