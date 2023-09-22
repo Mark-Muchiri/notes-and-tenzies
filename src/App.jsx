@@ -1,116 +1,112 @@
+// Import necessary libraries and components
 import './App.css';
-// import Main from './components/Main/Main';
-// import Navbar from './components/navbar/Navbar';
-import { useEffect, useState } from 'react';
+import React from "react";
 import Sidebar from "./components/Sidebar";
 import Editor from "./components/Editor";
 import Split from "react-split";
-import { notesCollection, db } from '../firebase.js';
-// OnSnapshot Hellps us keep data in sync
-import { addDoc, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import {
+    onSnapshot,
+    addDoc,
+    doc,
+    deleteDoc,
+    setDoc
+} from "firebase/firestore";
+import { notesCollection, db } from "../firebase.js";
 
-
+// Define the main App component
 export default function App() {
-    /** 
-     * DOCUMENTATION :
-      INFO: => Making the state into a function 
-      allows it to lazily initialize 
-      (Here, we've used an arrow function, 
-      but any function works for this purpose)
-     */
+    // Define state variables for notes and the current selected note ID
+    const [ notes, setNotes ] = React.useState([]);
+    const [ currentNoteId, setCurrentNoteId ] = React.useState("");
 
-    // notes has to be an array of data (in form of objects)
-    const [ notes, setNotes ] = useState([]);
-    const [ currentNoteId, setCurrentNoteId ] = useState(
-        (notes[ 0 ]?.id) || ""
-    );
+    // Find the currently selected note based on its ID or default to the first note
+    const currentNote =
+        notes.find(note => note.id === currentNoteId)
+        || notes[ 0 ];
 
-    const currentNote = notes.find(note => note.id === setCurrentNoteId) || notes[ 0 ];
-
-    useEffect(() => {
-        // eslint-disable-next-line no-unused-vars
+    // Set up an effect to listen for changes in the notes collection from Firebase
+    React.useEffect(() => {
         const unsubscribe = onSnapshot(notesCollection, function (snapshot) {
-            // INFO: sync up our local array with the snapshot data
+            // Sync up our local notes array with the snapshot data from Firebase
             const notesArr = snapshot.docs.map(doc => ({
                 ...doc.data(),
                 id: doc.id
             }));
             setNotes(notesArr);
         });
+        // Unsubscribe when the component unmounts to prevent memory leaks
         return unsubscribe;
     }, []);
-    /*
-    INFO: CRUD Functions. 
-    Passed to children components as props. 
-    Tree format architecture
-    */
+
+    // Set up an effect to initialize the currentNoteId if it's not set
+    React.useEffect(() => {
+        if (!currentNoteId) {
+            setCurrentNoteId(notes[ 0 ]?.id);
+        }
+    }, [ notes, currentNoteId ]);
+
+    // Function to create a new note
     async function createNewNote() {
         const newNote = {
-            body: "Type your markdown note's title here",
+            body: "# Type your markdown note's title here"
         };
+        // Add a new note document to the notes collection in Firebase
         const newNoteRef = await addDoc(notesCollection, newNote);
         setCurrentNoteId(newNoteRef.id);
     }
 
-    function updateNote(text) {
-        //  INFO: => This puts recently-modified note to the top
-        setNotes(oldNotes => {
-            const newArray = [];
-            for (let i = 0; i < oldNotes.length; i++) {
-                const oldNote = oldNotes[ i ];
-                if (oldNote.id === currentNoteId) {
-                    newArray.unshift({ ...oldNote, body: text });
-                } else {
-                    newArray.push(oldNote);
-                }
-            }
-            return newArray;
-        });
+    // Function to update the content of the current note
+    async function updateNote(text) {
+        const docRef = doc(db, "notes", currentNoteId);
+        // Update the note document in Firebase with the new content
+        await setDoc(docRef, { body: text }, { merge: true });
     }
 
+    // Function to delete a note
     async function deleteNote(noteId) {
-        // INFO: `doc()` helps us get access to a single document
         const docRef = doc(db, "notes", noteId);
+        // Delete the note document from the notes collection in Firebase
         await deleteDoc(docRef);
     }
 
+    // Render the main application UI
     return (
         <main>
             {
+                // Check if there are any notes to display
                 notes.length > 0
-                    ?
-                    <Split
-                        sizes={[ 30, 70 ]}
-                        direction="horizontal"
-                        className="split"
-                    >
-                        <Sidebar
-                            notes={notes}
-                            currentNote={currentNote}
-                            setCurrentNoteId={setCurrentNoteId}
-                            newNote={createNewNote}
-                            deleteNote={deleteNote}
-                        />
-                        {
-                            currentNoteId &&
-                            notes.length > 0 &&
+                    ? (
+                        // Split the UI into Sidebar and Editor components
+                        <Split
+                            sizes={[ 30, 70 ]}
+                            direction="horizontal"
+                            className="split"
+                        >
+                            <Sidebar
+                                notes={notes}
+                                currentNote={currentNote}
+                                setCurrentNoteId={setCurrentNoteId}
+                                newNote={createNewNote}
+                                deleteNote={deleteNote}
+                            />
                             <Editor
                                 currentNote={currentNote}
                                 updateNote={updateNote}
                             />
-                        }
-                    </Split>
-                    :
-                    <div className="no-notes">
-                        <h1>You have no notes</h1>
-                        <button
-                            className="first-note"
-                            onClick={createNewNote}
-                        >
-                            Create one now
-                        </button>
-                    </div>
-
+                        </Split>
+                    )
+                    : (
+                        // Display a message when there are no notes
+                        <div className="no-notes">
+                            <h1>You have no notes</h1>
+                            <button
+                                className="first-note"
+                                onClick={createNewNote}
+                            >
+                                Create one now
+                            </button>
+                        </div>
+                    )
             }
         </main>
     );

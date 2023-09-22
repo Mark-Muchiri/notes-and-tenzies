@@ -6,32 +6,29 @@ export default function Sidebar(props) {
         currentNote: propTypes,
         setCurrentNoteId: propTypes,
         newNote: propTypes,
-        deleteNote: propTypes.func,
+        deleteNote: propTypes,
     };
+    {/* NOTE => Using split JS func to get the 1st 
+    line of the note and display it on the sidebar */}
 
-    const noteElements = props.notes.map(
-        (
-            note,
-            // index
-        ) => (
-            <div key={note.id}>
-                <div
-                    className={`title ${note.id === props.currentNote.id ? "selected-note" : ""}`}
-                    onClick={() => props.setCurrentNoteId(note.id)}
+    const noteElements = props.notes.map((note) => (
+        <div key={note.id}>
+            <div
+
+                className={`title ${note.id === props.currentNote.id ? "selected-note" : ""
+                    }`}
+                onClick={() => props.setCurrentNoteId(note.id)}
+            >
+                <h4 className="text-snippet">{note.body.split("\n")[ 0 ]}</h4>
+                <button
+                    className="delete-btn"
+                    onClick={() => props.deleteNote(note.id)}
                 >
-
-                    {/* NOTE => Using split JS func to get the 1st 
-                    line of the note and display it on the sidebar */}
-                    <h4 className="text-snippet">{note.body.split("\n")[ 0 ]}</h4>
-                    <button
-                        className="delete-btn"
-                        onClick={() => props.deleteNote(note.id)}
-                    >
-                        <i className="gg-trash trash-icon"></i>
-                    </button>
-                </div>
+                    <i className="gg-trash trash-icon"></i>
+                </button>
             </div>
-        ));
+        </div>
+    ));
 
     return (
         <section className="pane sidebar">
