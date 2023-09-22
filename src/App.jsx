@@ -24,12 +24,15 @@ export default function App() {
 
     /**
      * Challenge:
-     * 1. Add createdAt and updatedAt properties to the notes
+     * 1. ✅ Add createdAt and updatedAt properties to the notes
      *    When a note is first created, set the `createdAt` and `updatedAt`
      *    properties to `Date.now()`. Whenever a note is modified, set the
      *    `updatedAt` property to `Date.now()`.
      * 
-     * 2. TBA
+     * 2. ✅ Create a new `sortedNotes` array (doesn't need to be saved 
+     *    in state) that orders the items in the array from 
+     *    most-recently-updated to least-recently-updated.
+     *    This may require a quick Google search.
      */
 
     // Set up an effect to listen for changes in the notes collection from Firebase
@@ -40,7 +43,9 @@ export default function App() {
                 ...doc.data(),
                 id: doc.id
             }));
-            setNotes(notesArr);
+            // Sorts the notes (from: latest to oldest) as they sync
+            const sortedNotes = notesArr.sort((a, b) => b.updatedAt - a.updatedAt)
+            setNotes(sortedNotes);
         });
         // Unsubscribe when the component unmounts to prevent memory leaks
         return unsubscribe;
