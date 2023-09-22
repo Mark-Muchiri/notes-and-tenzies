@@ -1,4 +1,3 @@
-// Import necessary libraries and components
 import './App.css';
 import React from "react";
 import Sidebar from "./components/Sidebar";
@@ -13,7 +12,6 @@ import {
 } from "firebase/firestore";
 import { notesCollection, db } from "../firebase.js";
 
-// Define the main App component
 export default function App() {
     // Define state variables for notes and the current selected note ID
     const [ notes, setNotes ] = React.useState([]);
@@ -69,7 +67,6 @@ export default function App() {
         await deleteDoc(docRef);
     }
 
-    // Render the main application UI
     return (
         <main>
             {
