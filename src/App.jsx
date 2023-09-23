@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import './App.css';
 import React from "react";
 import Sidebar from "./components/Sidebar";
