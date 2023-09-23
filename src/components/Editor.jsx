@@ -3,11 +3,11 @@ import ReactMde from "react-mde";
 import Showdown from "showdown";
 import propTypes from 'prop-types';
 
-export default function Editor({ currentNote, updateNote }) {
+export default function Editor({ tempNoteText, setTempNoteText }) {
     // Define PropTypes for the component's props
     Editor.propTypes = {
-        currentNote: propTypes.object, // Expecting an object for currentNote
-        updateNote: propTypes.func,   // Expecting a function for updateNote
+        tempNoteText: propTypes.object, // Expecting an object for currentNote
+        setTempNoteText: propTypes.func,   // Expecting a function for updateNote
     };
 
     // Initialize the selectedTab state to "write"
@@ -24,10 +24,10 @@ export default function Editor({ currentNote, updateNote }) {
     return (
         <section className="pane-editor">
             <ReactMde
-                // Set the initial value to the body of the current note (if it exists)
-                value={currentNote?.body}
-                // Callback function to update the note content
-                onChange={updateNote}
+                // Set the initial value to the tempNoteText for debouncing
+                value={tempNoteText}
+                // function to update the note content to the debounced data
+                onChange={setTempNoteText}
                 // Selected tab for write/preview
                 selectedTab={selectedTab}
                 // Callback to change the selected tab

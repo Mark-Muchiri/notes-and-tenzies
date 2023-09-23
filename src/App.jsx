@@ -16,11 +16,13 @@ export default function App() {
     // Define state variables for notes and the current selected note ID
     const [ notes, setNotes ] = React.useState([]);
     const [ currentNoteId, setCurrentNoteId ] = React.useState("");
+    const [ tempNoteText, setTempNoteText ] = React.useState('');
 
     // Find the currently selected note based on its ID or default to the first note
     const currentNote =
         notes.find(note => note.id === currentNoteId)
         || notes[ 0 ];
+
 
     // Set up an effect to listen for changes in the notes collection from Firebase
     React.useEffect(() => {
@@ -37,6 +39,28 @@ export default function App() {
         // Unsubscribe when the component unmounts to prevent memory leaks
         return unsubscribe;
     }, []);
+
+    // Set up an effect to update text on the edito to the currentNote state
+    React.useEffect(() => {
+        if (currentNote) {
+            setTempNoteText(currentNote.body);
+        }
+    }, [ currentNote ]);
+
+    // Debounce with setTimeout JS func.
+    // Important:  This is what connects to firestor for the updates
+    React.useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            // So when I click a note it doesn't update the tempNoteText
+            // And so only update if the condition is true
+            if (tempNoteText !== currentNote.body) {
+                updateNote(tempNoteText);
+            }
+            // Uncomment 👇 for testing puporses only
+            // updateNote(tempNoteText);
+        }, 500);
+        return () => clearTimeout(timeoutId);
+    }, [ tempNoteText ]);
 
     // Set up an effect to initialize the currentNoteId if it's not set
     React.useEffect(() => {
@@ -91,8 +115,8 @@ export default function App() {
                                 deleteNote={deleteNote}
                             />
                             <Editor
-                                currentNote={currentNote}
-                                updateNote={updateNote}
+                                tempNoteText={tempNoteText}
+                                setTempNoteText={setTempNoteText}
                             />
                         </Split>
                     )
