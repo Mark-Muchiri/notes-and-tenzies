@@ -1,40 +1,33 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import './App.css';
+import "./App.css";
 import React from "react";
 import Sidebar from "./components/Sidebar";
 import Editor from "./components/Editor";
 import Split from "react-split";
-import {
-    onSnapshot,
-    addDoc,
-    doc,
-    deleteDoc,
-    setDoc
-} from "firebase/firestore";
+import { onSnapshot, addDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
 import { notesCollection, db } from "../firebase.js";
 
 export default function App() {
     // Define state variables for notes and the current selected note ID
     const [ notes, setNotes ] = React.useState([]);
     const [ currentNoteId, setCurrentNoteId ] = React.useState("");
-    const [ tempNoteText, setTempNoteText ] = React.useState('');
+    const [ tempNoteText, setTempNoteText ] = React.useState("");
 
     // Find the currently selected note based on its ID or default to the first note
-    const currentNote =
-        notes.find(note => note.id === currentNoteId)
-        || notes[ 0 ];
-
+    const currentNote = notes.find((note) => note.id === currentNoteId) || notes[ 0 ];
 
     // Set up an effect to listen for changes in the notes collection from Firebase
     React.useEffect(() => {
         const unsubscribe = onSnapshot(notesCollection, function (snapshot) {
             // Sync up our local notes array with the snapshot data from Firebase
-            const notesArr = snapshot.docs.map(doc => ({
+            const notesArr = snapshot.docs.map((doc) => ({
                 ...doc.data(),
-                id: doc.id
+                id: doc.id,
             }));
             // Sorts the notes (from: latest to oldest) as they sync
-            const sortedNotes = notesArr.sort((a, b) => b.updatedAt - a.updatedAt);
+            const sortedNotes = notesArr.sort(
+                (a, b) => b.updatedAt - a.updatedAt
+            );
             setNotes(sortedNotes);
         });
         // Unsubscribe when the component unmounts to prevent memory leaks
@@ -86,7 +79,11 @@ export default function App() {
     async function updateNote(text) {
         const docRef = doc(db, "notes", currentNoteId);
         // Update the note document in Firebase with the new content
-        await setDoc(docRef, { body: text, updatedAt: Date.now() }, { merge: true });
+        await setDoc(
+            docRef,
+            { body: text, updatedAt: Date.now() },
+            { merge: true }
+        );
     }
 
     // Function to delete a note
@@ -100,39 +97,34 @@ export default function App() {
         <main>
             {
                 // Check if there are any notes to display
-                notes.length > 0
-                    ? (
-                        // Split the UI into Sidebar and Editor components
-                        <Split
-                            sizes={[ 30, 70 ]}
-                            direction="horizontal"
-                            className="split"
-                        >
-                            <Sidebar
-                                notes={notes}
-                                currentNote={currentNote}
-                                setCurrentNoteId={setCurrentNoteId}
-                                newNote={createNewNote}
-                                deleteNote={deleteNote}
-                            />
-                            <Editor
-                                tempNoteText={tempNoteText}
-                                setTempNoteText={setTempNoteText}
-                            />
-                        </Split>
-                    )
-                    : (
-                        // Display a message when there are no notes
-                        <div className="no-notes">
-                            <h1>You have no notes</h1>
-                            <button
-                                className="first-note"
-                                onClick={createNewNote}
-                            >
-                                Create one now
-                            </button>
-                        </div>
-                    )
+                notes.length > 0 ? (
+                    // Split the UI into Sidebar and Editor components
+                    <Split
+                        sizes={[ 30, 70 ]}
+                        direction="horizontal"
+                        className="split"
+                    >
+                        <Sidebar
+                            notes={notes}
+                            currentNote={currentNote}
+                            setCurrentNoteId={setCurrentNoteId}
+                            newNote={createNewNote}
+                            deleteNote={deleteNote}
+                        />
+                        <Editor
+                            tempNoteText={tempNoteText}
+                            setTempNoteText={setTempNoteText}
+                        />
+                    </Split>
+                ) : (
+                    // Display a message when there are no notes
+                    <div className="no-notes">
+                        <h1>You have no notes</h1>
+                        <button className="first-note" onClick={createNewNote}>
+                            Create one now
+                        </button>
+                    </div>
+                )
             }
         </main>
     );
